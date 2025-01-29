@@ -1,6 +1,6 @@
 # IMPORTS
 from dotenv import load_dotenv
-# import os
+import os
 load_dotenv()
 
 from flask import Flask, jsonify
@@ -22,7 +22,13 @@ def get_db_connection():
 # AUTH ROUTES
 @app.route('/sign-token', methods=['GET'])
 def sign_token():
-  return jsonify({"message": "You have authorization!"})
+  user = {
+    "id": 1,
+    "username": "TEST",
+    "password": "test"
+  }
+  token = jwt.encode(user, os.getenv('JWT_SECRET'), algorithm="HS256")
+  return jsonify({"token": token})
 
 
 # ROUTES
