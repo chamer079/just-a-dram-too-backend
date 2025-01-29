@@ -1,11 +1,10 @@
 # IMPORTS
 from dotenv import load_dotenv
-import os
+# import os
 load_dotenv()
 
-from flask import Flask, jsonify, request, g
+from flask import Flask, jsonify
 import jwt
-import bcrypt
 import psycopg2, psycopg2.extras
 
 
@@ -21,7 +20,9 @@ def get_db_connection():
 
 
 # AUTH ROUTES
-
+@app.route('/sign-token', methods=['GET'])
+def sign_token():
+  return jsonify({"message": "You have authorization!"})
 
 
 # ROUTES
