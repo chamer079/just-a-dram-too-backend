@@ -30,6 +30,10 @@ def sign_token():
   token = jwt.encode(user, os.getenv('JWT_SECRET'), algorithm="HS256")
   return jsonify({"token": token})
 
+@app.route('/auth/login', methods=['POST'])
+def login():
+  return jsonify({"message": "Login route reached."})
+
 
 # ROUTES
 @app.route('/')
