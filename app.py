@@ -90,15 +90,32 @@ def verify_token():
   except Exception as err:
     return jsonify({"err": err.message})
 
-@app.route('/users')
+# @app.route('/users')
+# @token_required
+# def users_index():
+#   connection = get_db_connection()
+#   cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+#   cursor.execute("SELECT id, username FROM users;")
+#   users = cursor.fetchall()
+#   connection.close()
+#   return jsonify(users), 200
+
+
+@app.route('/users/<user_id>')
 @token_required
-def users_index():
+def users_index(user_id):
+  # if user_id != g.user["id"]:
+  #   return jsonify({"err": "Unauthorized"}), 403
   connection = get_db_connection()
   cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-  cursor.execute("SELECT id, username FROM users;")
-  users = cursor.fetchall()
+  cursor.execute("SELECT id, username FROM users WHERE id = %s;"), (user_id)
+  user = cursor.fetchall()
   connection.close()
-  return jsonify(users), 200
+  if user is None:
+    return jsonify({"err": "Not Found"}), 404
+  return jsonify(user), 200
+
+
 
 
 
