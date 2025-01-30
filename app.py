@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
+from auth_middleware import token_required
+
 from flask import Flask, jsonify, request, g
 import jwt
 import bcrypt
@@ -89,6 +91,7 @@ def verify_token():
     return jsonify({"err": err.message})
 
 @app.route('/users')
+@token_required
 def users_index():
   connection = get_db_connection()
   cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
