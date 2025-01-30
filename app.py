@@ -51,7 +51,9 @@ def sign_up():
     created_user = cursor.fetchone()
     connection.commit()
     connection.close()
-    return jsonify(created_user), 201
+    payload = {"username": created_user["username"], "id": created_user["id"]}
+    token = jwt.encode({ "payload": payload }, os.getenv('JWT_SECRET'))
+    return jsonify({"token": token, "user": created_user}), 201
   except Exception as err:
     return jsonify({"err": err}), 401
 
