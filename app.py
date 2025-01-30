@@ -41,13 +41,13 @@ def sign_up():
     new_user_data = request.get_json()
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute("SELECT * FROM users WHERE username = %s;", (new_user_data["username"],)) 
+    cursor.execute("SELECT * FROM users WHERE username = %s or email = %s;", (new_user_data["username"], new_user_data["email"],)) 
     existing_user = cursor.fetchone()
     if existing_user:
       cursor.close()
       return jsonify({"err": "Username is already taken."}), 400
     hashed_password = bcrypt.hashpw(bytes(new_user_data["password"], 'utf-8'), bcrypt.gensalt())
-    cursor.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)", (new_user_data["username"], hashed_password.decode('utf-8')))
+    cursor.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)", (new_user_data["username"], new_user_data["email"], hashed_password.decode('utf-8')))
     created_user = cursor.fetchone()
     connection.commit()
     connection.close()
@@ -72,5 +72,3 @@ def index():
 
 # SERVER HANDLER
 app.run()
-
-
