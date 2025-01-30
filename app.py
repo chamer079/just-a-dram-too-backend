@@ -88,6 +88,15 @@ def verify_token():
   except Exception as err:
     return jsonify({"err": err.message})
 
+@app.route('/users')
+def users_index():
+  connection = get_db_connection()
+  cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+  cursor.execute("SELECT id, username FROM users;")
+  users = cursor.fetchall()
+  connection.close()
+  return jsonify(users), 200
+
 
 
 # ROUTES
