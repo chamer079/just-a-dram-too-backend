@@ -79,6 +79,15 @@ def login():
   finally:
     connection.close
 
+@app.route('/verify-token', methods=['POST'])
+def verify_token():
+  try:
+    token = request.headers.get('Authorization').split(' ')[1]
+    decoded_token = jwt.decode(token, os.getenv('JWT_SECRET'), algorithms=["HS256"])
+    return jsonify({"user: decoded_token"})
+  except Exception as err:
+    return jsonify({"err": err.message})
+
 
 
 # ROUTES
