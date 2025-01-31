@@ -23,22 +23,8 @@ def get_db_connection():
 
 
 # AUTH ROUTES
-# @app.route('/sign-token', methods=['GET'])
-# def sign_token():
-#   user = {
-#     "id": 1,
-#     "username": "TEST",
-#     "password": "test"
-#   }
-#   token = jwt.encode(user, os.getenv('JWT_SECRET'), algorithm="HS256")
-#   return jsonify({"token": token})
-
 @app.route('/auth/sign-up', methods=['POST'])
 def sign_up():
-  # try:
-  #   return jsonify({"message": "Sign up route reached"})
-  # except Exception as err:
-  #   return jsonify({"err": err.message})
   try:
     new_user_data = request.get_json()
     connection = get_db_connection()
@@ -90,39 +76,12 @@ def verify_token():
   except Exception as err:
     return jsonify({"err": err.message})
 
-# @app.route('/users')
-# @token_required
-# def users_index():
-#   connection = get_db_connection()
-#   cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-#   cursor.execute("SELECT id, username FROM users;")
-#   users = cursor.fetchall()
-#   connection.close()
-#   return jsonify(users), 200
-
-
-@app.route('/users/<user_id>')
-@token_required
-def users_index(user_id):
-  # if user_id != g.user["id"]:
-  #   return jsonify({"err": "Unauthorized"}), 403
-  connection = get_db_connection()
-  cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-  cursor.execute("SELECT id, username FROM users WHERE id = %s;"), (user_id)
-  user = cursor.fetchall()
-  connection.close()
-  if user is None:
-    return jsonify({"err": "Not Found"}), 404
-  return jsonify(user), 200
-
-
-
 
 
 # ROUTES
 @app.route('/')
 def index():
-  return "Hello, world!"
+  return "Landing Page"
 
 # SERVER HANDLER
 app.run()
