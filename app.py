@@ -88,7 +88,8 @@ def index():
 def create_whisky():
   try:
     new_whisky = request.json
-    new_whisky["user_id"] = g.user.get("id")
+    new_whisky["user_id"] = g.user.get("payload")["id"]
+    print(g.user.get("payload")["id"])
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
@@ -206,7 +207,5 @@ def delete_whisky(whisky_id):
     return jsonify({"err": err.message}), 500
 
     
-
-
 # SERVER HANDLER
 app.run()
