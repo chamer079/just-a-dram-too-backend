@@ -94,7 +94,7 @@ def create_whisky():
     cursor.execute("""
                    INSERT INTO whiskies (name, distillery, image, type, origin, age, flavor, hue, alcohol_content, notes, user_id )
                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                   RETURNING *
+                   RETURNING *;
                    """,
                    (new_whisky["name"], new_whisky["distillery"], new_whisky["image"], new_whisky["type"], new_whisky["origin"], new_whisky["age"], new_whisky["flavor"],new_whisky["hue"], new_whisky["alcohol_content"], new_whisky["notes"], new_whisky['user_id'])
                    )
@@ -106,7 +106,7 @@ def create_whisky():
     return jsonify({"err": err}), 500
 
 @app.route('/whiskies', methods=['GET'])
-# @token_required  #<- commented/uncommented out, data still renders with 1st query
+@token_required  #<- commented/uncommented out, data still renders with 1st query
 def whiskies_index():
   try:
     connection = get_db_connection()
@@ -158,6 +158,34 @@ def show_whisky(whisky_id):
     return jsonify({"whisky": whisky}), 200
   except Exception as err:
     return jsonify({"err": err.message}), 500
+
+
+@app.route('/whiskies/<whisky_id>', methods=['PUT'])
+@token_required
+def update_whisky(whisky_id):
+  try:
+    updated_whisky_data = request.json
+    connection = get_db_connection()
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT * FROM whiskies WHERE whiskies.id = %s;", (whisky_id,))
+    whisky_to_update = cursor.fetchone()
+    if whisky_to_update is None:
+      return jsonify({"err": "Whisky Not Found"}), 404
+    connection.commit()
+    if whisky_to_update["user_id"] is not g.user.get("id"):
+      return jsonify({"err:" "Unauthorized"}), 401
+    cursor.execute("""
+                  UPDATE whiskies SET name = %s, distillery = %s, image = %s, type = %s, origin = %s, age = %s, flavor = %s, hue = %s, alcohol_content = %s, notes = %s
+                  WHERE whiskies.id = %s RETURNING *;""",
+                  (updated_whisky_data["name"], updated_whisky_data["distillery"], updated_whisky_data["image"], updated_whisky_data["type"], updated_whisky_data["origin"], updated_whisky_data["age"], updated_whisky_data["flavor"], updated_whisky_data["hue"], updated_whisky_data["alcohol_content"], updated_whisky_data["notes"], whisky_id))
+    updated_whisky = cursor.fetchone()
+    connection.commit()
+    connection.close()
+    return jsonify({"whisky": updated_whisky}), 200
+  except Exception as err:
+    return jsonify({"err": err.message}), 500
+
+
 
     
 
