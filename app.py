@@ -191,7 +191,7 @@ def delete_whisky(whisky_id):
   try:
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute("SELECT * FROM whiskies WHERE whiskies.id = %s;", (whisky_id))
+    cursor.execute("SELECT * FROM whiskies WHERE whiskies.id = %s;", (whisky_id,))
     whisky_to_delete = cursor.fetchone()
     if whisky_to_delete is None:
       return jsonify({"err": "Whisky Not Found"}), 404
