@@ -107,22 +107,16 @@ def create_whisky():
     return jsonify({"err": err}), 500
 
 @app.route('/whiskies', methods=['GET'])
-@token_required  #<- commented/uncommented out, data still renders with 1st query
+@token_required  
 def whiskies_index():
   try:
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
     cursor.execute("""
-                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes
-                  FROM whiskies;
+                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes, whiskies.user_id
+                  FROM whiskies INNER JOIN users
+                  ON whiskies.user_id = users.id;
                   """)
-
-    # cursor.execute("""
-    #               SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes, whiskies.user_id
-    #               FROM whiskies INNER JOIN users
-    #               ON whiskies.user_id = users.id;
-    #               """)
     
     whiskies = cursor.fetchall()
     connection.commit()
