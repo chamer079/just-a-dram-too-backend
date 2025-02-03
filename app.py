@@ -122,6 +122,25 @@ def whiskies_index():
     return jsonify({"whiskies": whiskies}), 200
   except Exception as err:
     return jsonify({"err": err.message}), 500
+  
+@app.route('/whiskies/<whisky_id>', methods=['GET'])
+@token_required
+def show_whisky(whisky_id):
+  try:
+    connection = get_db_connection()
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("""
+                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes, whiskies.user_id
+                  FROM whiskies INNER JOIN users
+                  ON whiskies.user_id = users.id
+                  WHERE whiskies.id = %s
+                  """, (whisky_id))
+    connection.close()
+    return jsonify({"whisky": whisky_id}), 200
+  except Exception as err:
+    return jsonify({"err": err.message}), 500
+
+    
 
 
 # SERVER HANDLER
