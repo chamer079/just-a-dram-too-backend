@@ -101,7 +101,7 @@ def create_whisky():
     created_whisky = cursor.fetchone()
     connection.commit()
     connection.close()
-    return jsonify({"hoot": created_whisky}), 201
+    return jsonify({"whisky": created_whisky}), 201
   except Exception as err:
     return jsonify({"err": err}), 500
 
@@ -112,7 +112,7 @@ def whiskies_index():
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
-                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes
+                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes, whiskies.user_id
                   FROM whiskies INNER JOIN users
                   ON whiskies.user_id = users.id;
                   """)
