@@ -89,7 +89,7 @@ def index():
 def create_whisky():
   try:
     new_whisky = request.json
-    new_whisky["user_id"] = g.user["id"]
+    new_whisky["user_id"] = g.user.get("id")
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
@@ -97,7 +97,7 @@ def create_whisky():
                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                    RETURNING *
                    """,
-                   (new_whisky["name"], new_whisky["distillery"], new_whisky["image"], new_whisky["type"], new_whisky["origin"], new_whisky["age"], new_whisky["flavor"],new_whisky["hue"], new_whisky["alcohol_content"], new_whisky["notes"], new_whisky['users_id'])
+                   (new_whisky["name"], new_whisky["distillery"], new_whisky["image"], new_whisky["type"], new_whisky["origin"], new_whisky["age"], new_whisky["flavor"],new_whisky["hue"], new_whisky["alcohol_content"], new_whisky["notes"], new_whisky['user_id'])
                    )
     created_whisky = cursor.fetchone()
     connection.commit()
