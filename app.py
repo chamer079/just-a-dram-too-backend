@@ -126,24 +126,17 @@ def whiskies_index():
     return jsonify({"err": err.message}), 500
   
 @app.route('/whiskies/<whisky_id>', methods=['GET'])
-# @token_required #<- commented/uncommented out, data still renders with 1st query
+@token_required 
 def show_whisky(whisky_id):
   try:
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
     cursor.execute("""
                   SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes
-                  FROM whiskies WHERE whiskies.id = %s;
-                  """, (whisky_id))  
-
-    # 404 - Not Found results with code block below.
-    # cursor.execute("""
-    #               SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes
-    #               FROM whiskies INNER JOIN users
-    #               ON whiskies.user_id = users.id
-    #               WHERE whiskies.id = %s;
-    #               """, (whisky_id))
+                  FROM whiskies INNER JOIN users
+                  ON whiskies.user_id = users.id
+                  WHERE whiskies.id = %s;""", 
+                  (whisky_id,))
 
     whisky = cursor.fetchone()
     if whisky is None:
