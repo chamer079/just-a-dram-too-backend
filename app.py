@@ -185,7 +185,25 @@ def update_whisky(whisky_id):
   except Exception as err:
     return jsonify({"err": err.message}), 500
 
-
+@app.route('/whiskies/<whisky_id>', methods=['DELETE'])
+@token_required
+def delete_whisky(whisky_id):
+  try:
+    connection = get_db_connection()
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT * FROM whiskies WHERE whiskies.id = %s;", (whisky_id))
+    whisky_to_delete = cursor.fetchone()
+    if whisky_to_delete is None:
+      return jsonify({"err": "Whisky Not Found"}), 404
+    connection.commit()
+    if whisky_to_delete["user.id"] is not g.user.get("id"):
+      return jsonify({"err": "Unauthorized"}), 401
+    cursor.execute("DELETE FROM whiskies WHERE whiskies.id = %s;", (whisky_id,))
+    connection.commit()
+    connection.close()
+    return jsonify({"message": "whisky deletion sucessful"}), 200
+  except Exception as err:
+    return jsonify({"err": err.message}), 500
 
     
 
