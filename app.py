@@ -17,7 +17,7 @@ app = Flask(__name__)
 def get_db_connection():
   connection = psycopg2.connect(
     host="localhost",
-    database="whiskies_db"
+    database="whisky_journal_db"
   )
   return connection
 
@@ -89,15 +89,15 @@ def index():
 def create_whisky():
   try:
     new_whisky = request.json
-    new_whisky["users_id"] = g.user["id"]
+    new_whisky["user_id"] = g.user["id"]
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
-                   INSERT INTO whiskies (users_id, name, distillery, image, type, origin, age, flavor, hue, alcohol_content, notes )
+                   INSERT INTO whiskies (name, distillery, image, type, origin, age, flavor, hue, alcohol_content, notes, user_id )
                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                    RETURNING *
                    """,
-                   (new_whisky['users_id'], new_whisky["name"], new_whisky["distillery"], new_whisky["image"], new_whisky["type"], new_whisky["origin"], new_whisky["age"], new_whisky["flavor"], new_whisky["notes"])
+                   (new_whisky["name"], new_whisky["distillery"], new_whisky["image"], new_whisky["type"], new_whisky["origin"], new_whisky["age"], new_whisky["flavor"],new_whisky["hue"], new_whisky["alcohol_content"], new_whisky["notes"], new_whisky['users_id'])
                    )
     created_whisky = cursor.fetchone()
     connection.commit()
