@@ -83,7 +83,6 @@ def verify_token():
 def index():
   return "Landing Page"
 
-
 @app.route('/whiskies', methods=['POST'])
 @token_required
 def create_whisky():
@@ -106,6 +105,23 @@ def create_whisky():
   except Exception as err:
     return jsonify({"err": err}), 500
 
+@app.route('/whiskies', methods=['GET'])
+@token_required
+def whiskies_index():
+  try:
+    connection = get_db_connection()
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("""
+                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes
+                  FROM whiskies INNER JOIN users
+                  ON whiskies.user_id = users.id;
+                  """)
+    whiskies = cursor.fetchall()
+    connection.commit()
+    connection.close()
+    return jsonify({"whiskies": whiskies}), 200
+  except Exception as err:
+    return jsonify({"err": err.message}), 500
 
 
 # SERVER HANDLER
