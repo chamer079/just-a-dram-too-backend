@@ -160,7 +160,7 @@ def update_whisky(whisky_id):
     if whisky_to_update is None:
       return jsonify({"err": "Whisky Not Found"}), 404
     connection.commit()
-    if whisky_to_update["user_id"] is not g.user.get("id"):
+    if whisky_to_update["user_id"] is not g.user.get("payload")["id"]:
       return jsonify({"err:" "Unauthorized"}), 401
     cursor.execute("""
                   UPDATE whiskies SET name = %s, distillery = %s, image = %s, type = %s, origin = %s, age = %s, flavor = %s, hue = %s, alcohol_content = %s, notes = %s
