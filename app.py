@@ -14,10 +14,16 @@ app = Flask(__name__)
 
 
 def get_db_connection():
-  connection = psycopg2.connect(
-    host="localhost",
-    database="whisky_journal_db"
-  )
+  if 'ON_HEROKU' in os.environ:
+    connection = psycopg2.connect(
+      os.getenv('DATABASE_URL'),
+      sslmode='require'
+    )
+  else:
+    connection = psycopg2.connect(
+      host="localhost",
+      database="whisky_journal_db"
+    )
   return connection
 
 
@@ -187,4 +193,5 @@ def delete_whisky(whisky_id):
     return jsonify({"err": err.message}), 500
 
     
-app.run()
+if __name__ == '__main__':
+  app.run()
