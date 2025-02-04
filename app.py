@@ -1,4 +1,3 @@
-# IMPORTS
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -11,8 +10,8 @@ import bcrypt
 import psycopg2, psycopg2.extras
 
 
-# APP & CONFIGURATIONS / INITIALIZING FLASK
 app = Flask(__name__)
+
 
 def get_db_connection():
   connection = psycopg2.connect(
@@ -22,7 +21,6 @@ def get_db_connection():
   return connection
 
 
-# AUTH ROUTES
 @app.route('/auth/sign-up', methods=['POST'])
 def sign_up():
   try:
@@ -44,7 +42,6 @@ def sign_up():
     return jsonify({"token": token, "user": created_user}), 201
   except Exception as err:
     return jsonify({"err": err}), 401
-
 
 @app.route('/auth/login', methods=['POST'])
 def login():
@@ -75,10 +72,8 @@ def verify_token():
     return jsonify({"user: decoded_token"})
   except Exception as err:
     return jsonify({"err": err.message})
+  
 
-
-
-# ROUTES
 @app.route('/')
 def index():
   return "Landing Page"
@@ -89,7 +84,6 @@ def create_whisky():
   try:
     new_whisky = request.json
     new_whisky["user_id"] = g.user.get("payload")["id"]
-    print(g.user.get("payload")["id"])
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
@@ -147,7 +141,6 @@ def show_whisky(whisky_id):
   except Exception as err:
     return jsonify({"err": err.message}), 500
 
-
 @app.route('/whiskies/<whisky_id>', methods=['PUT'])
 @token_required
 def update_whisky(whisky_id):
@@ -194,5 +187,4 @@ def delete_whisky(whisky_id):
     return jsonify({"err": err.message}), 500
 
     
-# SERVER HANDLER
 app.run()
