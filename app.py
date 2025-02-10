@@ -11,7 +11,6 @@ import bcrypt
 import psycopg2, psycopg2.extras
 
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -116,7 +115,7 @@ def whiskies_index():
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
-                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes, whiskies.user_id
+                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes, whiskies.user_id, whiskies.id
                   FROM whiskies INNER JOIN users
                   ON whiskies.user_id = users.id;
                   """)
@@ -135,7 +134,7 @@ def show_whisky(whisky_id):
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
-                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes
+                  SELECT whiskies.name, whiskies.distillery, whiskies.image, whiskies.type, whiskies.origin, whiskies.age, whiskies.flavor, whiskies.hue, whiskies.alcohol_content, whiskies.notes, whiskies.id
                   FROM whiskies INNER JOIN users
                   ON whiskies.user_id = users.id
                   WHERE whiskies.id = %s;""", 
