@@ -188,7 +188,7 @@ def delete_whisky(whisky_id):
     if whisky_to_delete["user_id"] is not g.user.get("payload")["id"]:
       return jsonify({"err": "Unauthorized"}), 401
     cursor.execute("DELETE FROM whiskies WHERE whiskies.id = %s;", (whisky_id,))
-    connection.commit()
+    connection.commit() 
     connection.close()
     return jsonify({"message": "whisky deletion sucessful"}), 200
   except Exception as err:
