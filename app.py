@@ -24,7 +24,7 @@ def get_db_connection():
   else:
     connection = psycopg2.connect(
       host="localhost",
-      database="whisky_journal_db"
+      database=os.getenv('POSTGRES_DATABASE')
     )
   return connection
 
