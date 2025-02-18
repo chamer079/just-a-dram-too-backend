@@ -10,7 +10,7 @@ import jwt
 import bcrypt
 import psycopg2, psycopg2.extras
 
-
+    
 app = Flask(__name__)
 CORS(app)
 
@@ -59,7 +59,7 @@ def login():
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT * FROM users WHERE username = %s;", (login_form_data["username"],))
     existing_user = cursor.fetchone()
-    if existing_user is None: 
+    if existing_user is None:
       return jsonify({"err": "Invalid"}), 401
     password_is_valid = bcrypt.checkpw(bytes(login_form_data["password"], 'utf-8'), bytes(existing_user["password"], 'utf-8'))
     if not password_is_valid:
